@@ -27,7 +27,7 @@ const route = useRoute()
 
     <footer class="site-footer">
       <div class="footer-content">
-        <p>// 2024 — javier sepúlveda</p>
+        <p>// {{ new Date().getFullYear() }} — javier sepúlveda — hecho con nuxt 3 + fastapi</p>
       </div>
     </footer>
   </div>
@@ -43,16 +43,18 @@ const route = useRoute()
 .site-header {
   background-color: var(--bg-primary);
   border-bottom: 2px solid var(--border-dark);
-  padding: 16px 0;
+  padding: 18px 0;
   position: sticky;
   top: 0;
   z-index: 100;
+  backdrop-filter: blur(8px);
+  background-color: rgba(10, 10, 10, 0.95);
 }
 
 .header-container {
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -67,16 +69,21 @@ const route = useRoute()
 }
 
 .site-label {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
   letter-spacing: 0.5px;
   color: var(--text-secondary);
   margin: 0;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: var(--accent-red);
+  }
 }
 
 .site-nav {
   display: flex;
-  gap: 28px;
+  gap: 32px;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -86,13 +93,13 @@ const route = useRoute()
   position: relative;
   color: var(--text-primary);
   text-decoration: none;
-  font-weight: 500;
-  font-size: 12px;
+  font-weight: 600;
+  font-size: 15px;
   letter-spacing: 0.5px;
   transition: color 0.3s ease;
 
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     left: 0;
     right: 0;
@@ -117,28 +124,28 @@ const route = useRoute()
 .site-main {
   flex: 1;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 24px;
 }
 
 .site-footer {
   background-color: var(--bg-secondary);
   border-top: 2px solid var(--border-dark);
-  padding: 24px 20px;
+  padding: 28px 24px;
   text-align: center;
   margin-top: auto;
 }
 
 .footer-content {
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
 }
 
 .footer-content p {
   margin: 0;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: 0.5px;
 }
 
@@ -146,11 +153,11 @@ const route = useRoute()
   .header-container {
     flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
+    gap: 12px;
   }
 
   .site-nav {
-    gap: 16px;
+    gap: 20px;
   }
 
   .site-main {

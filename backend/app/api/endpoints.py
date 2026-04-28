@@ -1,3 +1,5 @@
+"""API endpoints — reads all data from MongoDB collections."""
+
 from asyncio import Lock
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
@@ -13,89 +15,10 @@ from ..models.schemas import (
     Experience,
     PersonalInfo,
     Project,
-    ProjectLink,
     Skill,
 )
 
 router = APIRouter()
-
-PROFILE = PersonalInfo(
-    name="Your Name",
-    title="Full Stack Engineer",
-    summary=(
-        "I build product-focused web applications with a strong foundation in "
-        "frontend architecture, API design, and cloud-native delivery."
-    ),
-    github_url="https://github.com/your-handle",
-    linkedin_url="https://www.linkedin.com/in/your-handle/",
-    email="hello@example.com",
-)
-
-EXPERIENCES = [
-    Experience(
-        id="exp-1",
-        company="Northwind Labs",
-        position="Senior Frontend Engineer",
-        start_date="2022-03",
-        end_date="Present",
-        description=[
-            "Led the rewrite of a legacy SPA into a Nuxt-based experience with SSR.",
-            "Improved page performance, accessibility, and design consistency across product surfaces.",
-        ],
-        technologies=["Nuxt", "Vue", "TypeScript", "Pinia", "PrimeVue"],
-    ),
-    Experience(
-        id="exp-2",
-        company="Atlas Systems",
-        position="Backend Engineer",
-        start_date="2019-08",
-        end_date="2022-02",
-        description=[
-            "Designed FastAPI services with async persistence and clear request boundaries.",
-            "Introduced operational safeguards for API validation and form submission workflows.",
-        ],
-        technologies=["FastAPI", "Python", "MongoDB", "Motor", "Docker"],
-    ),
-]
-
-SKILLS = [
-    Skill(category="Frontend", items=["Vue 3", "Nuxt 3", "TypeScript", "Pinia"], proficiency=92),
-    Skill(category="Backend", items=["FastAPI", "Pydantic", "MongoDB", "Async IO"], proficiency=88),
-    Skill(category="DevOps", items=["Docker", "Docker Compose", "Linux", "CI/CD"], proficiency=80),
-]
-
-PROJECTS = [
-    Project(
-        id="simulapucv",
-        title="SimulaPUCV",
-        short_description="Plataforma de simulación educativa con visualización en tiempo real",
-        description="SimulaPUCV es una plataforma interactiva de simulación diseñada para estudiantes de ingeniería. Permite visualizar en tiempo real procesos complejos de sistemas dinámicos. Construida con React, Go backend y PostgreSQL para máximo rendimiento.",
-        images=["https://via.placeholder.com/1200x800?text=SimulaPUCV"],
-        technologies=["React", "Go", "PostgreSQL"],
-        links=[ProjectLink(type="github", url="https://github.com/jsk11L/proyecto-generico", label="GitHub")],
-        created_at="2023-09-20",
-    ),
-    Project(
-        id="omnidesk",
-        title="OmniDesk",
-        short_description="Suite de productividad multiplataforma con sincronización en la nube",
-        description="OmniDesk es una solución integral de productividad que funciona en web, móvil y escritorio. Ofrece sincronización en tiempo real entre dispositivos, gestión de tareas, notas y calendario. Stack moderno con arquitectura escalable.",
-        images=["https://via.placeholder.com/1200x800?text=OmniDesk"],
-        technologies=["Angular", "NestJS", "React Native", "PostgreSQL"],
-        links=[ProjectLink(type="github", url="https://github.com/jsk11L/proyecto-generico", label="GitHub")],
-        created_at="2023-06-15",
-    ),
-    Project(
-        id="jamspace",
-        title="JamSpace",
-        short_description="Plataforma colaborativa de música en tiempo real con Web Audio API",
-        description="JamSpace permite a músicos colaborar en tiempo real desde cualquier lugar. Características incluyen sincronización de audio, metrónomo compartido y grabación en la nube. Utiliza Web Audio API para procesamiento de audio de baja latencia.",
-        images=["https://via.placeholder.com/1200x800?text=JamSpace"],
-        technologies=["Next.js", "Supabase", "Web Audio API"],
-        links=[ProjectLink(type="github", url="https://github.com/jsk11L/proyecto-generico", label="GitHub")],
-        created_at="2024-02-28",
-    ),
-]
 
 RATE_LIMIT_STATE: dict[str, list[datetime]] = defaultdict(list)
 RATE_LIMIT_LOCK = Lock()
@@ -121,31 +44,42 @@ async def _enforce_contact_rate_limit(request: Request, settings: Settings) -> N
 
 
 @router.get("/profile", response_model=PersonalInfo)
-async def get_profile() -> PersonalInfo:
-    return PROFILE
+async def get_profile(database=Depends(get_database)) -> PersonalInfo:
+    """Return personal info from the profile collection."""
+    doc = await database.profile.find_one({}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Profile not found")
+    return PersonalInfo(**doc)
 
 
 @router.get("/experience", response_model=list[Experience])
-async def get_experience(tech: str | None = None) -> list[Experience]:
-    if not tech:
-        return EXPERIENCES
+async def get_experience(
+    tech: str | None = None, database=Depends(get_database)
+) -> list[Experience]:
+    """Return experiences, optionally filtered by technology."""
+    query: dict = {}
+    if tech:
+        query["technologies"] = {"$regex": tech, "$options": "i"}
 
-    normalized_tech = tech.casefold()
-    return [
-        experience
-        for experience in EXPERIENCES
-        if any(normalized_tech in technology.casefold() for technology in experience.technologies)
-    ]
+    cursor = database.experiences.find(query, {"_id": 0})
+    docs = await cursor.to_list(length=100)
+    return [Experience(**doc) for doc in docs]
 
 
 @router.get("/skills", response_model=list[Skill])
-async def get_skills() -> list[Skill]:
-    return SKILLS
+async def get_skills(database=Depends(get_database)) -> list[Skill]:
+    """Return all skill categories from the skills collection."""
+    cursor = database.skills.find({}, {"_id": 0})
+    docs = await cursor.to_list(length=100)
+    return [Skill(**doc) for doc in docs]
 
 
 @router.get("/projects", response_model=list[Project])
-async def get_projects() -> list[Project]:
-    return PROJECTS
+async def get_projects(database=Depends(get_database)) -> list[Project]:
+    """Return all projects from the projects collection."""
+    cursor = database.projects.find({}, {"_id": 0})
+    docs = await cursor.to_list(length=100)
+    return [Project(**doc) for doc in docs]
 
 
 @router.post("/contact", response_model=ContactResponse, status_code=status.HTTP_201_CREATED)
@@ -155,6 +89,7 @@ async def submit_contact(
     database=Depends(get_database),
     settings: Settings = Depends(get_settings),
 ) -> ContactResponse:
+    """Persist a contact message in MongoDB."""
     await _enforce_contact_rate_limit(request, settings)
 
     message = ContactMessage(

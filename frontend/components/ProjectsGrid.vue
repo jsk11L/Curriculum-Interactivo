@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ProjectItem } from "~/stores/cvStore"
+import type { ProjectItem } from '~/stores/cvStore'
 
 defineProps<{
   projects: ProjectItem[]
@@ -7,10 +7,10 @@ defineProps<{
 </script>
 
 <template>
-  <section class="projects-grid-section">
+  <section class="projects-section">
     <div class="section-header">
-      <h2>Proyectos Destacados</h2>
-      <p>Explora los proyectos en los que he trabajado</p>
+      <h2>$ projects --featured</h2>
+      <p class="section-subtitle">// Proyectos en los que he trabajado</p>
     </div>
     <div class="projects-grid">
       <ProjectCard v-for="project in projects" :key="project.id" :project="project" />
@@ -19,38 +19,35 @@ defineProps<{
 </template>
 
 <style scoped lang="scss">
-.projects-grid-section {
-  padding: 60px 20px;
-  background: #f9f9f9;
+.projects-section {
+  padding: 48px 0;
+}
 
-  .section-header {
-    text-align: center;
-    margin-bottom: 40px;
+.section-header {
+  margin-bottom: 32px;
 
-    h2 {
-      margin: 0 0 8px;
-      font-size: 32px;
-      font-weight: 700;
-      color: #333;
-    }
-
-    p {
-      margin: 0;
-      color: #666;
-      font-size: 16px;
-    }
+  h2 {
+    margin: 0 0 8px;
+    color: var(--accent-red);
+    font-size: 1.6rem;
+    letter-spacing: 1px;
   }
 
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 24px;
-    max-width: 1200px;
-    margin: 0 auto;
+  .section-subtitle {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
+}
 
-    @media (max-width: 768px) {
-      grid-template-columns: 1fr;
-    }
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
   }
 }
 </style>

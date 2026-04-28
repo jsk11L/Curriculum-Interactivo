@@ -1,3 +1,9 @@
+/**
+ * Centralized client state for CV data.
+ *
+ * Uses $fetch (not useFetch) so requests work identically in SSR and CSR.
+ * The store is the single source of truth — all components read from here.
+ */
 import { defineStore } from "pinia"
 
 export interface PersonalInfo {
@@ -58,47 +64,40 @@ export const useCvStore = defineStore("cv", {
     experiences: [] as ExperienceItem[],
     skills: [] as SkillItem[],
     projects: [] as ProjectItem[],
-    loading: false,
+    loading: true,
     error: null as string | null,
   }),
   actions: {
-    apiBaseUrl() {
+    /** Resolve the API base URL depending on server vs client context. */
+    getBaseUrl(): string {
       const config = useRuntimeConfig()
-      return process.server ? config.apiUrl : config.public.apiUrl
+      return import.meta.server
+        ? (config.apiUrl as string)
+        : (config.public.apiUrl as string)
     },
-    async fetchProfile() {
-      const { data, error } = await useFetch<PersonalInfo>(`${this.apiBaseUrl()}/profile`)
-      if (error.value) {
-        throw error.value
-      }
-      this.profile = data.value ?? null
-    },
-    async fetchExperiences(tech?: string) {
-      const url = new URL(`${this.apiBaseUrl()}/experience`)
-      if (tech) {
-        url.searchParams.set("tech", tech)
-      }
 
-      const { data, error } = await useFetch<ExperienceItem[]>(url.toString())
-      if (error.value) {
-        throw error.value
-      }
-      this.experiences = data.value ?? []
+    async fetchProfile() {
+      this.profile = await $fetch<PersonalInfo>(`${this.getBaseUrl()}/profile`)
     },
+
+    async fetchExperiences(tech?: string) {
+      const url = new URL(`${this.getBaseUrl()}/experience`)
+      if (tech) url.searchParams.set("tech", tech)
+      this.experiences = await $fetch<ExperienceItem[]>(url.toString())
+    },
+
     async fetchSkills() {
-      const { data, error } = await useFetch<SkillItem[]>(`${this.apiBaseUrl()}/skills`)
-      if (error.value) {
-        throw error.value
-      }
-      this.skills = data.value ?? []
+      this.skills = await $fetch<SkillItem[]>(`${this.getBaseUrl()}/skills`)
     },
+
     async fetchProjects() {
-      const { data, error } = await useFetch<ProjectItem[]>(`${this.apiBaseUrl()}/projects`)
-      if (error.value) {
-        throw error.value
-      }
-      this.projects = data.value ?? []
+      this.projects = await $fetch<ProjectItem[]>(`${this.getBaseUrl()}/projects`)
     },
+
+    /**
+     * Load all data in parallel.
+     * Sets loading=true while fetching, catches errors gracefully.
+     */
     async loadAll() {
       this.loading = true
       this.error = null
@@ -110,19 +109,19 @@ export const useCvStore = defineStore("cv", {
           this.fetchSkills(),
           this.fetchProjects(),
         ])
-      } catch (error) {
-        this.error = error instanceof Error ? error.message : "Unable to load curriculum data"
+      } catch (err) {
+        this.error =
+          err instanceof Error ? err.message : "Unable to load curriculum data"
       } finally {
         this.loading = false
       }
     },
+
     async submitContact(payload: ContactPayload) {
-      const response = await $fetch<ContactResponse>(`${this.apiBaseUrl()}/contact`, {
+      return await $fetch<ContactResponse>(`${this.getBaseUrl()}/contact`, {
         method: "POST",
         body: payload,
       })
-
-      return response
     },
   },
 })

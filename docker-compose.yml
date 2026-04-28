@@ -6,19 +6,33 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    environment:
+      MONGO_INITDB_DATABASE: cv_db
 
   backend:
     build:
       context: ./backend
     container_name: cv_backend
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     env_file:
       - .env
     environment:
-      MONGO_URI: ${MONGO_URI}
+      MONGO_URI: ${MONGO_URI:-mongodb://mongodb:27017/cv_db}
+      PYTHONUNBUFFERED: 1
     ports:
       - "8000:8000"
+    volumes:
+      - ./backend/app:/app/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
 
   frontend:
     build:
@@ -31,8 +45,10 @@ services:
     environment:
       API_URL: ${API_URL}
       NUXT_PUBLIC_API_URL: ${NUXT_PUBLIC_API_URL}
+      NODE_ENV: production
     ports:
       - "3000:3000"
+    command: npm run preview
 
 volumes:
   mongodb_data:

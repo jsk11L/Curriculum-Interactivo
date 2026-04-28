@@ -1,3 +1,5 @@
+"""Pydantic schemas for API payloads and responses."""
+
 from datetime import datetime
 
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
@@ -42,18 +44,18 @@ class ContactResponse(BaseModel):
     status: str
 
 
-    class ProjectLink(BaseModel):
-        type: str = Field(description="Link type: github, demo, live, etc.")
-        url: HttpUrl
-        label: str = Field(default="View")
+class ProjectLink(BaseModel):
+    type: str = Field(description="Link type: github, demo, live, etc.")
+    url: HttpUrl
+    label: str = Field(default="View")
 
 
-    class Project(BaseModel):
-        id: str
-        title: str
-        short_description: str
-        description: str
-        images: list[str] = Field(default_factory=list, description="List of image URLs")
-        technologies: list[str] = Field(default_factory=list)
-        links: list[ProjectLink] = Field(default_factory=list)
-        created_at: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+class Project(BaseModel):
+    id: str
+    title: str
+    short_description: str
+    description: str
+    images: list[str] = Field(default_factory=list, description="List of image URLs")
+    technologies: list[str] = Field(default_factory=list)
+    links: list[ProjectLink] = Field(default_factory=list)
+    created_at: str = Field(pattern=r"^(\d{4}-\d{2}-\d{2})?$")

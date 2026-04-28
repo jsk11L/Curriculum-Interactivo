@@ -1,38 +1,72 @@
 # Curriculum Interactivo
 
-Monorepo de referencia para un curriculo interactivo con backend FastAPI + MongoDB y frontend Nuxt 3 + Vue 3.
+Currículum interactivo con diseño **Dark Hacker Terminal** — monorepo con backend FastAPI + MongoDB y frontend Nuxt 3 + Vue 3.
+
+## Stack
+
+| Capa | Tecnologías |
+|------|-------------|
+| Frontend | Nuxt 3, Vue 3, Pinia, PrimeVue, Chart.js, Lucide-Vue, SCSS |
+| Backend | FastAPI, Motor (async MongoDB), Pydantic |
+| Base de datos | MongoDB |
+| Infraestructura | Docker, Docker Compose |
 
 ## Estructura
 
-- `backend/`: API FastAPI con schemas Pydantic, conexion a MongoDB y endpoint de contacto con rate limiting basico.
-- `frontend/`: interfaz Nuxt 3 con Pinia, PrimeVue, radar chart para habilidades y formulario de contacto.
-- `docker-compose.yml`: levanta MongoDB, backend y frontend.
+```
+├── backend/
+│   └── app/
+│       ├── api/endpoints.py      # Rutas API (CRUD desde MongoDB)
+│       ├── core/
+│       │   ├── config.py          # Settings con Pydantic
+│       │   ├── database.py        # Conexión MongoDB (Motor)
+│       │   └── seed.py            # Datos reales + seed automático
+│       └── models/schemas.py      # Schemas Pydantic
+├── frontend/
+│   ├── assets/
+│   │   ├── scss/main.scss         # Design system global
+│   │   └── profile.png            # Foto de perfil
+│   ├── components/
+│   │   ├── HeroSection.vue        # Terminal con typewriter + foto superpuesta
+│   │   ├── SkillsChart.vue        # Radar chart + grilla de tags
+│   │   ├── ExperienceTimeline.vue  # Timeline custom dark
+│   │   ├── ProjectsGrid.vue       # Grid de proyectos
+│   │   └── ProjectCard.vue         # Card individual con fecha/tech
+│   ├── layouts/default.vue         # Layout con header sticky + footer
+│   ├── pages/
+│   │   ├── index.vue               # Home: hero → proyectos → exp + skills → contacto
+│   │   ├── contact.vue             # Formulario de contacto
+│   │   └── projects/[id].vue       # Detalle de proyecto
+│   ├── plugins/primevue.ts         # PrimeVue (dark mode forzado)
+│   └── stores/cvStore.ts           # Store Pinia (fuente de verdad)
+└── docker-compose.yml
+```
 
-## Variables de entorno
+## Endpoints API
 
-- `MONGO_URI=mongodb://mongodb:27017/cv_db`
-- `API_URL=http://backend:8000`
-- `NUXT_PUBLIC_API_URL=http://localhost:8000/api/v1`
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/health` | Health check |
+| `GET` | `/api/v1/profile` | Información personal |
+| `GET` | `/api/v1/experience` | Experiencias (filtro opcional `?tech=xyz`) |
+| `GET` | `/api/v1/skills` | Skills por categoría con proficiency |
+| `GET` | `/api/v1/projects` | Proyectos (con links múltiples) |
+| `POST` | `/api/v1/contact` | Enviar mensaje (rate limited) |
 
-## Endpoints
+## Persistencia
 
-- `GET /api/v1/profile`
-- `GET /api/v1/experience?tech=vue`
-- `GET /api/v1/skills`
-- `POST /api/v1/contact`
+Los datos se almacenan en MongoDB. Al iniciar el backend, `seed.py` **siempre** hace drop y re-insert de las colecciones para que los cambios en el archivo se reflejen inmediatamente.
+
+> **Nota**: en producción, desactivar el drop automático y usar migraciones.
 
 ## Desarrollo local
 
-Backend:
-
 ```bash
+# Backend
 cd backend
 uvicorn app.main:app --reload
-```
 
-Frontend:
-
-```bash
+# Frontend
 cd frontend
 npm install
 npm run dev
@@ -43,3 +77,15 @@ npm run dev
 ```bash
 docker compose up --build
 ```
+
+MongoDB arranca con healthcheck. El backend espera a que MongoDB esté healthy. El frontend usa `npm run preview` (requiere build previo — el Dockerfile lo maneja).
+
+## Diseño
+
+- Fondo oscuro (`#0a0a0a`) con gradientes rojos sutiles
+- Tipografía monospace (Fira Code via Google Fonts)
+- Acentos en rojo (`#dc2626`)
+- Terminal interactiva con efecto typewriter en el hero
+- Foto de perfil en ventana terminal superpuesta
+- Bordes cuadrados, estética minimalista
+- Scrollbar y text-selection personalizados

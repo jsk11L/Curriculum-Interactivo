@@ -7,7 +7,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     theme: {
       preset: Aura,
       options: {
-        darkModeSelector: "system",
+        darkModeSelector: false,
       },
     },
   })

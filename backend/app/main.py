@@ -1,18 +1,41 @@
+"""FastAPI application entrypoint and lifespan management."""
+
 from contextlib import asynccontextmanager
+import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .api.endpoints import router as cv_router
 from .core.config import get_settings
-from .core.database import close_mongo_connection, connect_to_mongo
+from .core.database import close_mongo_connection, connect_to_mongo, get_database
+from .core.seed import seed_database
+
+logger = logging.getLogger(__name__)
+
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await connect_to_mongo()
+    logger.info("🚀 Starting up Curriculum API...")
+    try:
+        await connect_to_mongo()
+        await seed_database(get_database())
+        logger.info("✓ Startup complete")
+    except Exception as e:
+        logger.error(f"✗ Startup failed: {e}")
+        raise
+    
     yield
+    
+    logger.info("🛑 Shutting down...")
     await close_mongo_connection()
+    logger.info("✓ Shutdown complete")
 
 
 settings = get_settings()
