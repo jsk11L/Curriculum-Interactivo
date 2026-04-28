@@ -25,6 +25,23 @@ export interface SkillItem {
   proficiency: number
 }
 
+export interface ProjectLink {
+  type: string
+  url: string
+  label: string
+}
+
+export interface ProjectItem {
+  id: string
+  title: string
+  short_description: string
+  description: string
+  images: string[]
+  technologies: string[]
+  links: ProjectLink[]
+  created_at: string
+}
+
 export interface ContactPayload {
   name: string
   email: string
@@ -40,6 +57,7 @@ export const useCvStore = defineStore("cv", {
     profile: null as PersonalInfo | null,
     experiences: [] as ExperienceItem[],
     skills: [] as SkillItem[],
+    projects: [] as ProjectItem[],
     loading: false,
     error: null as string | null,
   }),
@@ -74,12 +92,24 @@ export const useCvStore = defineStore("cv", {
       }
       this.skills = data.value ?? []
     },
+    async fetchProjects() {
+      const { data, error } = await useFetch<ProjectItem[]>(`${this.apiBaseUrl()}/projects`)
+      if (error.value) {
+        throw error.value
+      }
+      this.projects = data.value ?? []
+    },
     async loadAll() {
       this.loading = true
       this.error = null
 
       try {
-        await Promise.all([this.fetchProfile(), this.fetchExperiences(), this.fetchSkills()])
+        await Promise.all([
+          this.fetchProfile(),
+          this.fetchExperiences(),
+          this.fetchSkills(),
+          this.fetchProjects(),
+        ])
       } catch (error) {
         this.error = error instanceof Error ? error.message : "Unable to load curriculum data"
       } finally {

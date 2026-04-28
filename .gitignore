@@ -134,3 +134,32 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# =========================
+# Backend (Python / FastAPI)
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+
+# =========================
+# Variables de Entorno y Secretos (¡Crítico!)
+# =========================
+.env
+.env.*
+*.local
+
+# =========================
+# Frontend Específico (Nuxt 3)
+# =========================
+.nuxt/
+.output/
+
+# =========================
+# Archivos de Sistema (macOS / Windows)
+# =========================
+.DS_Store
+Thumbs.db

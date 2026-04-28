@@ -12,6 +12,8 @@ from ..models.schemas import (
     ContactResponse,
     Experience,
     PersonalInfo,
+    Project,
+    ProjectLink,
     Skill,
 )
 
@@ -62,6 +64,39 @@ SKILLS = [
     Skill(category="DevOps", items=["Docker", "Docker Compose", "Linux", "CI/CD"], proficiency=80),
 ]
 
+PROJECTS = [
+    Project(
+        id="proj-1",
+        title="E-Commerce Platform",
+        short_description="Full-stack marketplace with real-time inventory",
+        description="A modern e-commerce platform built with Nuxt 3 and FastAPI.",
+        images=["https://via.placeholder.com/1200x800?text=Project+1"],
+        technologies=["Vue 3", "Nuxt 3", "FastAPI", "MongoDB", "Docker"],
+        links=[ProjectLink(type="github", url="https://github.com/example/ecommerce", label="GitHub")],
+        created_at="2024-01-15",
+    ),
+    Project(
+        id="proj-2",
+        title="Task Dashboard",
+        short_description="Collaborative task management with real-time updates",
+        description="A task management app with WebSockets and drag-and-drop.",
+        images=["https://via.placeholder.com/1200x800?text=Project+2"],
+        technologies=["Vue 3", "TypeScript", "WebSocket", "Pinia", "Node.js"],
+        links=[ProjectLink(type="github", url="https://github.com/example/taskboard", label="GitHub")],
+        created_at="2024-03-20",
+    ),
+    Project(
+        id="proj-3",
+        title="Analytics Engine",
+        short_description="Real-time data visualization and reporting",
+        description="A scalable analytics engine with custom dashboards.",
+        images=["https://via.placeholder.com/1200x800?text=Project+3"],
+        technologies=["FastAPI", "Python", "PostgreSQL", "Redis", "Vue 3"],
+        links=[ProjectLink(type="github", url="https://github.com/example/analytics", label="GitHub")],
+        created_at="2023-11-10",
+    ),
+]
+
 RATE_LIMIT_STATE: dict[str, list[datetime]] = defaultdict(list)
 RATE_LIMIT_LOCK = Lock()
 
@@ -106,6 +141,11 @@ async def get_experience(tech: str | None = None) -> list[Experience]:
 @router.get("/skills", response_model=list[Skill])
 async def get_skills() -> list[Skill]:
     return SKILLS
+
+
+@router.get("/projects", response_model=list[Project])
+async def get_projects() -> list[Project]:
+    return PROJECTS
 
 
 @router.post("/contact", response_model=ContactResponse, status_code=status.HTTP_201_CREATED)
