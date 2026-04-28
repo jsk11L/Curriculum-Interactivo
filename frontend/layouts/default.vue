@@ -7,16 +7,15 @@ const route = useRoute()
     <header class="site-header">
       <div class="header-container">
         <NuxtLink to="/" class="site-logo">
-          <p class="site-label">Mi CV</p>
-          <h1>Curriculum Interactivo</h1>
+          <span class="site-label">// javier.sepúlveda</span>
         </NuxtLink>
 
         <nav class="site-nav">
           <NuxtLink to="/" class="nav-link" :class="{ active: route.path === '/' }">
-            Inicio
+            $ inicio
           </NuxtLink>
           <NuxtLink to="/contact" class="nav-link" :class="{ active: route.path === '/contact' }">
-            Contacto
+            $ contacto
           </NuxtLink>
         </nav>
       </div>
@@ -28,7 +27,7 @@ const route = useRoute()
 
     <footer class="site-footer">
       <div class="footer-content">
-        <p>&copy; 2024 Mi Curriculum. Todos los derechos reservados.</p>
+        <p>// 2024 — javier sepúlveda</p>
       </div>
     </footer>
   </div>
@@ -39,14 +38,15 @@ const route = useRoute()
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: #fff;
 }
 
 .site-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 20px 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: var(--bg-primary);
+  border-bottom: 2px solid var(--border-dark);
+  padding: 16px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .header-container {
@@ -56,63 +56,78 @@ const route = useRoute()
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 32px;
 }
 
 .site-logo {
   text-decoration: none;
-  color: white;
+  color: var(--text-primary);
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
 }
 
 .site-label {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
   margin: 0;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  opacity: 0.9;
-}
-
-.site-logo h1 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
 }
 
 .site-nav {
   display: flex;
-  gap: 24px;
+  gap: 28px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-link {
   position: relative;
-  color: white;
+  color: var(--text-primary);
   text-decoration: none;
   font-weight: 500;
-}
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  transition: color 0.3s ease;
 
-.nav-link.active::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -4px;
-  height: 2px;
-  background: white;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 2px;
+    background: var(--accent-red);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover,
+  &.active {
+    color: var(--accent-red);
+
+    &::after {
+      transform: scaleX(1);
+    }
+  }
 }
 
 .site-main {
   flex: 1;
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 .site-footer {
-  background: #111827;
-  color: white;
+  background-color: var(--bg-secondary);
+  border-top: 2px solid var(--border-dark);
   padding: 24px 20px;
   text-align: center;
+  margin-top: auto;
 }
 
 .footer-content {
@@ -122,17 +137,24 @@ const route = useRoute()
 
 .footer-content p {
   margin: 0;
-  opacity: 0.8;
+  color: var(--text-secondary);
+  font-size: 12px;
+  letter-spacing: 0.5px;
 }
 
 @media (max-width: 768px) {
   .header-container {
     flex-direction: column;
     align-items: flex-start;
+    gap: 16px;
   }
 
   .site-nav {
     gap: 16px;
+  }
+
+  .site-main {
+    padding: 0 16px;
   }
 }
 </style>

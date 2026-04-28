@@ -1,83 +1,110 @@
 <script setup lang="ts">
-import { computed } from "vue"
-import { Chart as ChartJS, Filler, Legend, LineElement, PointElement, RadialLinearScale, Title, Tooltip } from "chart.js"
-import { Radar } from "vue-chartjs"
-
 import type { SkillItem } from "~/stores/cvStore"
 
-ChartJS.register(Title, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler)
-
-const props = defineProps<{
+defineProps<{
   skills: SkillItem[]
 }>()
 
-const chartData = computed(() => ({
-  labels: props.skills.map((skill) => skill.category),
-  datasets: [
-    {
-      label: "Proficiency",
-      data: props.skills.map((skill) => skill.proficiency),
-      backgroundColor: "rgba(34, 197, 94, 0.2)",
-      borderColor: "rgba(34, 197, 94, 0.95)",
-      pointBackgroundColor: "rgba(34, 197, 94, 0.95)",
-      pointBorderColor: "#ffffff",
-      pointHoverBackgroundColor: "#ffffff",
-      pointHoverBorderColor: "rgba(34, 197, 94, 0.95)",
-    },
-  ],
-}))
-
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      labels: {
-        color: "#d7e0ea",
-      },
-    },
-  },
-  scales: {
-    r: {
-      beginAtZero: true,
-      max: 100,
-      ticks: {
-        stepSize: 20,
-        color: "#97a6ba",
-      },
-      grid: {
-        color: "rgba(148, 163, 184, 0.2)",
-      },
-      angleLines: {
-        color: "rgba(148, 163, 184, 0.2)",
-      },
-      pointLabels: {
-        color: "#eef3f8",
-      },
-    },
-  },
-}
+// Flat list of technologies to display
+const technologies = [
+  'React',
+  'Vue 3',
+  'Nuxt 3',
+  'Angular',
+  'Next.js',
+  'React Native',
+  'Go',
+  'Python (FastAPI)',
+  'Node.js (NestJS)',
+  'PostgreSQL',
+  'MongoDB',
+  'Supabase',
+  'Docker',
+  'TypeScript',
+  'TailwindCSS'
+]
 </script>
 
 <template>
-  <section class="panel">
-    <div class="panel-header">
-      <h3>Skills</h3>
-      <p>Radar overview of the main areas of focus.</p>
-    </div>
+  <section class="skills-section">
+    <h2>$ skills --list</h2>
+    <p class="section-subtitle">// Tecnologías y herramientas dominadas</p>
 
-    <div class="chart-shell">
-      <ClientOnly>
-        <Radar v-if="skills.length" :data="chartData" :options="chartOptions" />
-        <p v-else class="empty-state">No skills data available yet.</p>
-      </ClientOnly>
-    </div>
-
-    <div class="skill-groups">
-      <article v-for="skill in skills" :key="skill.category" class="skill-card">
-        <h4>{{ skill.category }}</h4>
-        <p>{{ skill.items.join(' • ') }}</p>
-      </article>
+    <div class="skills-grid">
+      <div v-for="tech in technologies" :key="tech" class="skill-tag">
+        {{ tech }}
+      </div>
     </div>
   </section>
 </template>
+
+<style scoped lang="scss">
+.skills-section {
+  padding: 40px 0;
+  border-top: 2px solid var(--border-dark);
+}
+
+h2 {
+  margin: 0 0 8px;
+  color: var(--accent-red);
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+}
+
+.section-subtitle {
+  margin: 0 0 32px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.skill-tag {
+  padding: 12px 16px;
+  border: 2px solid var(--accent-red);
+  color: var(--accent-red);
+  background-color: transparent;
+  text-align: center;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  cursor: default;
+
+  &:hover {
+    background-color: var(--accent-red);
+    color: var(--bg-primary);
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.3);
+  }
+}
+
+@media (max-width: 768px) {
+  .skills-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+  }
+
+  .skill-tag {
+    padding: 10px 12px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .skills-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 8px;
+  }
+
+  .skill-tag {
+    padding: 8px 10px;
+    font-size: 10px;
+  }
+}
+</style>

@@ -31,23 +31,23 @@ defineProps<{
 .project-card {
   display: flex;
   flex-direction: column;
-  background: white;
-  border-radius: 8px;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-dark);
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   text-decoration: none;
   color: inherit;
 
   &:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border-color: var(--accent-red);
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.2);
     transform: translateY(-4px);
   }
 
   .project-image {
     width: 100%;
     height: 200px;
-    background: #f0f0f0;
+    background: var(--border-dark);
     overflow: hidden;
 
     img {
@@ -62,8 +62,9 @@ defineProps<{
       align-items: center;
       justify-content: center;
       height: 100%;
-      color: #999;
-      font-size: 14px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-family: 'Fira Code', monospace;
     }
 
     &:hover img {
@@ -79,15 +80,16 @@ defineProps<{
 
     .project-title {
       margin: 0;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
-      color: #333;
+      color: var(--accent-red);
+      font-family: 'Fira Code', monospace;
     }
 
     .project-description {
       margin: 0;
-      font-size: 14px;
-      color: #666;
+      font-size: 13px;
+      color: var(--text-primary);
       line-height: 1.5;
       flex-grow: 1;
     }
@@ -98,17 +100,19 @@ defineProps<{
       flex-wrap: wrap;
 
       .tech-badge {
-        background: #e8f0fe;
-        color: #1967d2;
+        background: transparent;
+        color: var(--accent-red);
+        border: 1px solid var(--accent-red);
         padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 12px;
-        font-weight: 500;
+        border-radius: 0;
+        font-size: 11px;
+        font-weight: 600;
+        font-family: 'Fira Code', monospace;
       }
 
       .tech-more {
-        color: #666;
-        font-size: 12px;
+        color: var(--text-secondary);
+        font-size: 11px;
         padding: 4px 8px;
       }
     }
