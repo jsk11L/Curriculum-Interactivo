@@ -1,97 +1,56 @@
-# Guía: Cómo agregar imágenes a los proyectos
+# Guía: Imágenes de proyectos
 
 ## Resumen
 
-Las imágenes de los proyectos se sirven desde el array `images` en cada proyecto del seed. Para que se muestren en la web, las imágenes deben estar accesibles desde el navegador.
+Cada proyecto debe tener al menos una imagen principal en `images[0]`. Esa imagen se usa como cover en la tarjeta del proyecto y como banner en la página de detalle.
 
-## Opción 1: Carpeta estática del frontend (recomendada para desarrollo)
+## Estado actual
 
-### Paso 1 — Crear la carpeta
+El seed ya genera un cover SVG embebido para cada proyecto, así que las páginas muestran imagen aunque todavía no existan archivos reales en disco.
 
-```
-frontend/public/images/projects/
-```
+## Convención recomendada
 
-### Paso 2 — Nombrar las imágenes
-
-Usa el `id` del proyecto como prefijo. Convención:
-
-| Proyecto | Imagen principal | Imágenes adicionales |
-|----------|------------------|---------------------|
-| SimulaPUCV | `simulapucv-cover.png` | `simulapucv-2.png`, `simulapucv-3.png` |
-| OmniDesk | `omnidesk-cover.png` | `omnidesk-2.png`, `omnidesk-3.png` |
-| JamSpace | `jamspace-cover.png` | `jamspace-2.png`, `jamspace-3.png` |
-| InteriorTwin | `interiortwin-cover.png` | `interiortwin-2.png`, `interiortwin-3.png` |
-| LoopMania | `loopmania-cover.png` | `loopmania-2.png`, `loopmania-3.png` |
-
-### Paso 3 — Colocar los archivos
+Si luego quieres reemplazar los covers generados por archivos reales, usa esta carpeta:
 
 ```
 frontend/public/images/projects/
-├── simulapucv-cover.png
-├── simulapucv-2.png
-├── omnidesk-cover.png
-├── jamspace-cover.png
-├── interiortwin-cover.png
-├── interiortwin-2.png
-├── loopmania-cover.png
-└── loopmania-2.png
 ```
 
-### Paso 4 — Actualizar el seed
+Nombra los archivos con el `id` del proyecto como prefijo:
 
-En `backend/app/core/seed.py`, agrega las rutas al array `images` de cada proyecto:
+| Proyecto | Cover principal |
+|----------|-----------------|
+| SimulaPUCV | `simulapucv-cover.png` |
+| OmniDesk | `omnidesk-cover.png` |
+| JamSpace | `jamspace-cover.png` |
+| InteriorTwin | `interiortwin-cover.png` |
+| LoopMania | `loopmania-cover.png` |
+
+## Cómo cargar las imágenes
+
+En `backend/app/core/seed.py`, el campo `images` debe tener al menos un elemento:
 
 ```python
-# Ejemplo para SimulaPUCV
 {
     "id": "simulapucv",
     ...
     "images": [
         "/images/projects/simulapucv-cover.png",
-        "/images/projects/simulapucv-2.png",
     ],
     ...
 }
 ```
 
-Las rutas empiezan con `/` porque Nuxt sirve la carpeta `public/` en la raíz del sitio.
-
-### Paso 5 — Reiniciar
-
-```bash
-docker compose up --build
-```
-
-El seed hace drop + re-insert automáticamente, así que los cambios se reflejan al reiniciar.
-
-## Opción 2: URLs externas
-
-Si prefieres hostear las imágenes en un CDN o servicio externo (Cloudinary, Imgur, etc.), simplemente pon la URL completa en el array `images`:
-
-```python
-"images": [
-    "https://i.imgur.com/abc123.png",
-    "https://res.cloudinary.com/demo/image/upload/sample.jpg",
-],
-```
-
-## Foto de perfil
-
-La foto de perfil del hero está en:
-
-```
-frontend/assets/profile.png
-```
-
-Reemplaza este archivo con tu foto real. Se importa estáticamente en `HeroSection.vue` así que se procesa durante el build.
-
-**Formato recomendado**: PNG o JPG, mínimo 400x500px, orientación retrato.
+Si usas archivos reales, las rutas empiezan con `/` porque Nuxt sirve `frontend/public/` en la raíz del sitio.
 
 ## Dónde se renderizan
 
 | Ubicación | Qué muestra |
 |-----------|-------------|
-| `ProjectCard.vue` | Primera imagen del array (`images[0]`) como cover |
-| `projects/[id].vue` | Banner principal (`images[0]`) + galería (todas las imágenes) |
-| `HeroSection.vue` | `assets/profile.png` (NO es del seed, es estática) |
+| `ProjectCard.vue` | La primera imagen del array como cover |
+| `projects/[id].vue` | Banner principal con `images[0]` y galería con el resto |
+| `HeroSection.vue` | `frontend/assets/profile.png` para la foto personal |
+
+## Reinicio
+
+Después de cambiar el seed, reinicia el backend o levanta todo de nuevo para que el drop + reinsert aplique los cambios.

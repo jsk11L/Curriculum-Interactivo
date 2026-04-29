@@ -11,7 +11,11 @@ defineProps<{
  */
 function formatDate(dateStr: string): string {
   if (!dateStr) return "TBA"
-  return new Date(dateStr).toLocaleDateString("es-ES", {
+
+  const parsedDate = new Date(dateStr)
+  if (Number.isNaN(parsedDate.getTime())) return "TBA"
+
+  return parsedDate.toLocaleDateString("es-ES", {
     year: "numeric",
     month: "long",
   })

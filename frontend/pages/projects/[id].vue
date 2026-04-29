@@ -18,7 +18,11 @@ if (!project.value) {
 /** Format project date — empty string means "En desarrollo". */
 function formatDate(dateStr: string): string {
   if (!dateStr) return 'TBA'
-  return new Date(dateStr).toLocaleDateString('es-ES', {
+
+  const parsedDate = new Date(dateStr)
+  if (Number.isNaN(parsedDate.getTime())) return 'TBA'
+
+  return parsedDate.toLocaleDateString('es-ES', {
     year: 'numeric',
     month: 'long',
   })
@@ -75,7 +79,7 @@ function formatDate(dateStr: string): string {
 
         <div class="sidebar-block">
           <h3>// Fecha</h3>
-          <p class="date-value">{{ new Date(project.created_at).toLocaleDateString('es-ES') }}</p>
+          <p class="date-value">{{ formatDate(project.created_at) }}</p>
         </div>
       </aside>
     </div>

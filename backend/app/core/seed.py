@@ -2,6 +2,7 @@
 
 import logging
 from datetime import datetime, timezone
+from urllib.parse import quote
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
@@ -9,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 PROFILE_DATA = {
     "name": "Javier Sepúlveda",
-    "title": "Estudiante de Ingeniería Civil Informática",
+    "title": "Estudiante de 5to año de Ingeniería Civil Informática",
     "summary": (
         "Estudiante de 5to año de Ingeniería Civil Informática apasionado "
         "por construir software y herramientas que voy viendo necesario en "
@@ -141,7 +142,9 @@ PROJECTS_DATA = [
             "graduación. Construida con React y Go para máximo rendimiento, "
             "con PostgreSQL como motor de datos."
         ),
-        "images": [],
+        "images": [
+            "/images/projects/simulapucv-cover.png"
+        ],
         "technologies": ["React", "Go", "PostgreSQL", "Tailwind CSS", "Vite"],
         "links": [
             {
@@ -163,7 +166,9 @@ PROJECTS_DATA = [
             "entre dispositivos. Stack moderno con arquitectura escalable "
             "diseñada para productividad real."
         ),
-        "images": [],
+        "images": [
+            "/images/projects/omnidesk-cover.png"
+        ],
         "technologies": ["Angular", "NestJS", "React Native", "PostgreSQL"],
         "links": [
             {
@@ -189,7 +194,9 @@ PROJECTS_DATA = [
             "de forma centralizada. Incluye grabación, organización de "
             "sesiones y colaboración entre miembros de la banda."
         ),
-        "images": [],
+        "images": [
+            "/images/projects/jamspace-cover.png"
+        ],
         "technologies": ["Next.js", "Supabase", "Web Audio API"],
         "links": [
             {
@@ -217,7 +224,9 @@ PROJECTS_DATA = [
             "una experiencia de diseño de interiores auténtica. Proyecto "
             "desarrollado en equipo durante la carrera universitaria."
         ),
-        "images": [],
+        "images": [
+            "/images/projects/interiortwin-cover.png"
+        ],
         "technologies": ["Unity", "C#", "3D Scanning", "AR"],
         "links": [
             {
@@ -239,7 +248,9 @@ PROJECTS_DATA = [
             "programación de forma interactiva y entretenida. Desarrollado "
             "en colaboración con un compañero de universidad."
         ),
-        "images": [],
+        "images": [
+            "/images/projects/loopmania-cover.png"
+        ],
         "technologies": ["Unity", "C#", "Game Design"],
         "links": [
             {

@@ -66,18 +66,10 @@ onMounted(() => {
             <div v-if="showContent && profile" class="about-output">
               <div class="terminal-line">
                 <span class="prompt">~/portfolio $</span>
-                <span class="command">cat about.txt</span>
+                <span class="command">cat profile.txt</span>
               </div>
-              <p class="about-text">
-                Estudiante de 5to año de Ingeniería Civil Informática apasionado
-                por <span class="highlight">construir software</span> y
-                <span class="highlight">herramientas</span> que voy viendo necesario
-                en mi vida y que pueden ser útil a más gente. Tengo experiencia en
-                <span class="highlight">investigación</span> y soy co-autor de una
-                publicación de optimización de cronogramas hospitalarios.
-                Me apasionan la <span class="highlight">música</span> y los
-                <span class="highlight">videojuegos</span>.
-              </p>
+              <h2 class="about-title">{{ profile.title }}</h2>
+              <p class="about-text">{{ profile.summary }}</p>
             </div>
           </Transition>
         </div>
@@ -236,18 +228,20 @@ onMounted(() => {
   gap: 16px;
 }
 
+.about-title {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: clamp(22px, 2.8vw, 30px);
+  line-height: 1.25;
+}
+
 .about-text {
-  margin: 4px 0 0 0;
+  margin: 0;
   padding: 16px 0 16px 24px;
   border-left: 3px solid var(--accent-red);
   color: var(--text-primary);
   font-size: 16px;
   line-height: 1.8;
-}
-
-.highlight {
-  color: var(--accent-red);
-  font-weight: 700;
 }
 
 /* Links */

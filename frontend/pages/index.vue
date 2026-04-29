@@ -38,10 +38,10 @@ await useAsyncData('cv-data', () => cvStore.loadAll(), {
       <section class="intro-band">
         <div>
           <p class="eyebrow">Sobre mí</p>
-          <h2>Construyo software que veo necesario</h2>
+          <h2>Software útil, investigación y creatividad</h2>
         </div>
         <p>
-          Este espacio muestra mi trayectoria, proyectos y habilidades técnicas.
+          Aquí reúno mi trayectoria, proyectos y habilidades técnicas en un solo lugar.
         </p>
       </section>
 
@@ -235,6 +235,13 @@ await useAsyncData('cv-data', () => cvStore.loadAll(), {
   align-items: start;
 }
 
+.contact-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-top: 6px;
+}
+
 .contact-actions {
   display: flex;
   flex-direction: column;
@@ -296,6 +303,18 @@ await useAsyncData('cv-data', () => cvStore.loadAll(), {
     color: var(--bg-primary);
     box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
   }
+}
+
+.contact-copy .eyebrow {
+  margin-bottom: 0;
+}
+
+.contact-copy h2 {
+  margin: 0;
+}
+
+.contact-copy p:last-child {
+  margin-top: 0;
 }
 
 @media (max-width: 900px) {
