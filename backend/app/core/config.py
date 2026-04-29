@@ -3,7 +3,7 @@
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -23,12 +23,21 @@ class Settings(BaseSettings):
     mongo_uri: str = "mongodb://mongodb:27017/cv_db"
     mongo_db_name: str = "cv_db"
     cors_origins: list[str] = Field(
-        default_factory=lambda: ["http://localhost:3000", "http://frontend:3000"]
+        default_factory=lambda: ["*"]
     )
     contact_rate_limit_window_seconds: int = 60
     contact_rate_limit_max_requests: int = 5
+
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v: object) -> list[str]:
+        """Accept comma-separated string or JSON list from env vars."""
+        if isinstance(v, str):
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
+        return v  # type: ignore[return-value]
 
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
     return Settings()
+
