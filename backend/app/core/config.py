@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     )
     contact_rate_limit_window_seconds: int = 60
     contact_rate_limit_max_requests: int = 5
+    smtp_user: str | None = None
+    smtp_password: str | None = None
 
     @field_validator("cors_origins", mode="before")
     @classmethod

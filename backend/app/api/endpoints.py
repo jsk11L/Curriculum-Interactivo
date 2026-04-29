@@ -4,7 +4,11 @@ from asyncio import Lock
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status, BackgroundTasks
+
+import smtplib
+import logging
+from email.message import EmailMessage
 
 from ..core.config import Settings, get_settings
 from ..core.database import get_database
@@ -82,19 +86,68 @@ async def get_projects(database=Depends(get_database)) -> list[Project]:
     return [Project(**doc) for doc in docs]
 
 
+logger = logging.getLogger(__name__)
+
+def send_email_notification(name: str, sender_email: str, content: str, settings):
+    """Función síncrona para enviar el correo."""
+    if not settings.smtp_user or not settings.smtp_password:
+        logger.warning("No se enviará correo: SMTP credentials no configuradas.")
+        return
+
+    msg = EmailMessage()
+    msg['Subject'] = f"🚀 Nuevo contacto en Portafolio: {name}"
+    msg['From'] = settings.smtp_user
+    msg['To'] = settings.smtp_user # Te lo envías a ti mismo
+
+    msg.set_content(f"""
+    ¡Hola Javier! Tienes un nuevo mensaje en tu portafolio.
+
+    Datos del contacto:
+    -------------------
+    Nombre: {name}
+    Email: {sender_email}
+
+    Mensaje:
+    --------
+    {content}
+    """)
+
+    try:
+        # Usando el servidor SMTP de Gmail
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login(settings.smtp_user, settings.smtp_password)
+            smtp.send_message(msg)
+            logger.info("Correo de notificación enviado con éxito.")
+    except Exception as e:
+        logger.error(f"Error al enviar el correo: {e}")
+
+
 @router.post("/contact", response_model=ContactResponse, status_code=status.HTTP_201_CREATED)
 async def submit_contact(
     payload: ContactMessageCreate,
     request: Request,
+    background_tasks: BackgroundTasks,  # <-- 1. Inyectamos BackgroundTasks
     database=Depends(get_database),
     settings: Settings = Depends(get_settings),
 ) -> ContactResponse:
-    """Persist a contact message in MongoDB."""
+    """Persist a contact message in MongoDB and send an email notification."""
     await _enforce_contact_rate_limit(request, settings)
 
     message = ContactMessage(
         **payload.model_dump(),
         created_at=datetime.now(timezone.utc),
     )
+    # Guardamos en la base de datos
     await database.contact_messages.insert_one(message.model_dump())
+
+    # 2. Programamos el correo para que se envíe en segundo plano
+    background_tasks.add_task(
+        send_email_notification,
+        name=payload.name,
+        sender_email=payload.email,
+        content=payload.content,
+        settings=settings
+    )
+
+    # 3. Respondemos al frontend inmediatamente, sin hacerle esperar por el email
     return ContactResponse(status="success")
