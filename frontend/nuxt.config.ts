@@ -14,10 +14,13 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: "Curriculum Interactivo",
+      title: "Javier Sepúlveda Dev",
       meta: [
         { name: "viewport", content: "width=device-width, initial-scale=1" },
         { name: "description", content: "Curriculum interactivo built with Nuxt, FastAPI, and MongoDB." },
+      ],
+      link: [
+        { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
       ],
     },
   },

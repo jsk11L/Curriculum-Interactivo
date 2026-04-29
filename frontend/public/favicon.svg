@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Javier Sepúlveda Dev">
+  <defs>
+    <radialGradient id="iconGradient" cx="30%" cy="28%" r="72%">
+      <stop offset="0%" stop-color="#6b0000" />
+      <stop offset="55%" stop-color="#1a0000" />
+      <stop offset="100%" stop-color="#050505" />
+    </radialGradient>
+    <linearGradient id="rimGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff3b30" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#120000" stop-opacity="0.85" />
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="28" fill="url(#iconGradient)" />
+  <circle cx="32" cy="32" r="27" fill="none" stroke="url(#rimGradient)" stroke-width="2.5" />
+  <circle cx="24" cy="22" r="9" fill="#ff5a4f" fill-opacity="0.12" />
+</svg>
