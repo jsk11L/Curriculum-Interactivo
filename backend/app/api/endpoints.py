@@ -141,8 +141,7 @@ async def submit_contact(
     await database.contact_messages.insert_one(message.model_dump())
 
     # 2. Programamos el correo para que se envíe en segundo plano
-    background_tasks.add_task(
-        send_email_notification,
+    send_email_notification(
         name=payload.name,
         sender_email=payload.email,
         content=payload.content,

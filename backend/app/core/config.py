@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     cors_origins: list[str] = Field(
         default_factory=lambda: ["*"]
     )
-    contact_rate_limit_window_seconds: int = 60
+    contact_rate_limit_window_seconds: int = 90
     contact_rate_limit_max_requests: int = 5
     smtp_user: str | None = None
     smtp_password: str | None = None
