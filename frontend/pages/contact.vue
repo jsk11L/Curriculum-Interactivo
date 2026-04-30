@@ -19,9 +19,27 @@ const form = ref({
   content: '',
 })
 
+// Computamos la longitud del mensaje en tiempo real
+const messageLength = computed(() => form.value.content.length)
+
+// Computamos si la longitud es inválida (menor a 10 o mayor a 2000)
+const isMessageInvalid = computed(() => messageLength.value < 10 || messageLength.value > 2000)
+
 const submit = async () => {
   if (!form.value.name || !form.value.email || !form.value.content) {
     errorMsg.value = 'Por favor completa todos los campos'
+    return
+  }
+
+  // 2. Validación de longitud del nombre (2 a 100)
+  if (form.value.name.length < 2 || form.value.name.length > 100) {
+    errorMsg.value = 'El nombre debe tener entre 2 y 100 caracteres.'
+    return
+  }
+
+  // 3. Validación de longitud del mensaje (10 a 2000)
+  if (isMessageInvalid.value) {
+    errorMsg.value = 'El mensaje debe tener entre 10 y 2000 caracteres.'
     return
   }
 
@@ -97,7 +115,16 @@ const submit = async () => {
         </div>
 
         <div class="form-group">
-          <label for="contact-message">mensaje</label>
+          <div class="label-wrapper" style="display: flex; justify-content: space-between; align-items: center;">
+            <label for="contact-message">mensaje</label>
+            <!-- El contador de caracteres con clase dinámica -->
+            <span 
+              class="char-counter" 
+              :class="{ 'invalid-count': isMessageInvalid }"
+            >
+              {{ messageLength }} / 2000
+            </span>
+          </div>
           <textarea
             id="contact-message"
             v-model="form.content"
@@ -288,6 +315,18 @@ h1 {
     background-color: rgba(239, 68, 68, 0.1);
     border: 1px solid #ef4444;
     color: #ef4444;
+  }
+}
+
+.char-counter {
+  font-family: 'Fira Code', monospace;
+  font-size: 11px;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+  
+  &.invalid-count {
+    color: #ef4444; /* El mismo rojo de tus errores */
+    font-weight: bold;
   }
 }
 
