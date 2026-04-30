@@ -7,13 +7,16 @@ from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+REPO_ROOT = Path(__file__).resolve().parents[3]
+BACKEND_ROOT = Path(__file__).resolve().parents[2]
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=(
-            Path(__file__).resolve().parents[3] / ".env"
-            if (Path(__file__).resolve().parents[3] / ".env").exists()
-            else None
-        ),
+        env_file=tuple(
+            env_path for env_path in (REPO_ROOT / ".env", BACKEND_ROOT / ".env") if env_path.exists()
+        )
+        or None,
         env_file_encoding="utf-8",
         extra="ignore",
     )
@@ -29,6 +32,11 @@ class Settings(BaseSettings):
     contact_rate_limit_max_requests: int = 5
     smtp_user: str | None = None
     smtp_password: str | None = None
+    smtp_host: str = "smtp.gmail.com"
+    smtp_port: int = 465
+    smtp_use_ssl: bool = True
+    smtp_use_tls: bool = False
+    smtp_timeout_seconds: int = 20
 
     @field_validator("cors_origins", mode="before")
     @classmethod

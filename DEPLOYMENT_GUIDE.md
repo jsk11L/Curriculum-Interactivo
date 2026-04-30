@@ -77,6 +77,13 @@ Set these in Cloud Run (or via `--set-env-vars`):
 - `MONGODB_URI` — connection string from Atlas
 - `CONTACT_RATE_LIMIT_MAX_REQUESTS` — optional
 - `CONTACT_RATE_LIMIT_WINDOW_SECONDS` — optional
+- `SMTP_USER` — mailbox used as sender and recipient
+- `SMTP_PASSWORD` — app password or SMTP password
+- `SMTP_HOST` — SMTP server host, for example `smtp.gmail.com`
+- `SMTP_PORT` — SMTP port, for example `465`
+- `SMTP_USE_SSL` — `true` for implicit SSL, `false` for STARTTLS
+- `SMTP_USE_TLS` — `true` when using STARTTLS with `SMTP_USE_SSL=false`
+- `SMTP_TIMEOUT_SECONDS` — optional socket timeout for the SMTP connection
 
 ---
 
@@ -113,6 +120,12 @@ Place these in project root for local dev (do NOT commit real secrets).
 MONGODB_URI=mongodb+srv://cv_user:YOUR_PASSWORD@cluster0.abcd.mongodb.net/cv?retryWrites=true&w=majority
 CONTACT_RATE_LIMIT_MAX_REQUESTS=5
 CONTACT_RATE_LIMIT_WINDOW_SECONDS=3600
+SMTP_USER=yourmail@gmail.com
+SMTP_PASSWORD=your-app-password
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USE_SSL=true
+SMTP_USE_TLS=false
 # If you expose host-specific variables
 API_PORT=8000
 ```
