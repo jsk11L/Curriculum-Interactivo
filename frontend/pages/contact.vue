@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import { useCvStore } from '~/stores/cvStore'
 
+const { copy } = usePortfolioCopy()
+
 const cvStore = useCvStore()
 const loading = ref(false)
 const submitted = ref(false)
@@ -27,19 +29,17 @@ const isMessageInvalid = computed(() => messageLength.value < 10 || messageLengt
 
 const submit = async () => {
   if (!form.value.name || !form.value.email || !form.value.content) {
-    errorMsg.value = 'Por favor completa todos los campos'
+    errorMsg.value = copy.value.ui.contactPage.requiredError
     return
   }
 
-  // 2. Validación de longitud del nombre (2 a 100)
   if (form.value.name.length < 2 || form.value.name.length > 100) {
-    errorMsg.value = 'El nombre debe tener entre 2 y 100 caracteres.'
+    errorMsg.value = copy.value.ui.contactPage.nameLengthError
     return
   }
 
-  // 3. Validación de longitud del mensaje (10 a 2000)
   if (isMessageInvalid.value) {
-    errorMsg.value = 'El mensaje debe tener entre 10 y 2000 caracteres.'
+    errorMsg.value = copy.value.ui.contactPage.messageLengthError
     return
   }
 
@@ -57,7 +57,7 @@ const submit = async () => {
       submitted.value = false
     }, 4000)
   } catch (error) {
-    errorMsg.value = 'Error enviando el mensaje. Intenta de nuevo.'
+    errorMsg.value = copy.value.ui.contactPage.sendError
   } finally {
     loading.value = false
   }
@@ -66,13 +66,13 @@ const submit = async () => {
 
 <template>
   <div class="contact-page">
-    <h1>$ contacto --info</h1>
-    <p class="subtitle">// Dejame un mensaje</p>
+    <h1>{{ copy.ui.contactPage.title }}</h1>
+    <p class="subtitle">{{ copy.ui.contactPage.subtitle }}</p>
 
     <div class="contact-wrapper">
       <aside v-if="profile" class="contact-info-panel">
         <div class="info-block">
-          <span class="label">email</span>
+          <span class="label">{{ copy.ui.contactPage.emailLabel }}</span>
           <a :href="`mailto:${profile.email}`">{{ profile.email }}</a>
         </div>
 
@@ -93,54 +93,53 @@ const submit = async () => {
 
       <form class="contact-form" @submit.prevent="submit">
         <div class="form-group">
-          <label for="contact-name">nombre</label>
+          <label for="contact-name">{{ copy.ui.contactPage.nameLabel }}</label>
           <input
             id="contact-name"
             v-model="form.name"
             type="text"
-            placeholder="tu nombre completo"
+            :placeholder="copy.ui.contactPage.namePlaceholder"
             required
           />
         </div>
 
         <div class="form-group">
-          <label for="contact-email">email</label>
+          <label for="contact-email">{{ copy.ui.contactPage.emailLabel }}</label>
           <input
             id="contact-email"
             v-model="form.email"
             type="email"
-            placeholder="tu@email.com"
+            :placeholder="copy.ui.contactPage.emailPlaceholder"
             required
           />
         </div>
 
         <div class="form-group">
           <div class="label-wrapper" style="display: flex; justify-content: space-between; align-items: center;">
-            <label for="contact-message">mensaje</label>
-            <!-- El contador de caracteres con clase dinámica -->
+            <label for="contact-message">{{ copy.ui.contactPage.messageLabel }}</label>
             <span 
               class="char-counter" 
               :class="{ 'invalid-count': isMessageInvalid }"
             >
-              {{ messageLength }} / 2000
+              {{ copy.ui.contactPage.charCounter(messageLength, 2000) }}
             </span>
           </div>
           <textarea
             id="contact-message"
             v-model="form.content"
-            placeholder="cuentame tu idea..."
+            :placeholder="copy.ui.contactPage.messagePlaceholder"
             rows="8"
             required
           ></textarea>
         </div>
 
         <button type="submit" :disabled="loading" class="btn-send">
-          {{ loading ? '$ enviando...' : '$ enviar mensaje' }}
+          {{ loading ? copy.ui.contactPage.submitting : copy.ui.contactPage.submit }}
         </button>
 
         <Transition name="fade">
           <div v-if="submitted" class="status-message success">
-            // ✓ Mensaje recibido. Te responderé pronto.
+            {{ copy.ui.contactPage.success }}
           </div>
         </Transition>
 

@@ -25,11 +25,13 @@ services:
     env_file:
       - .env
     environment:
+      # Si falla el .env, usará esta por defecto apuntando al contenedor local
       MONGO_URI: ${MONGO_URI:-mongodb://mongodb:27017/cv_db}
       PYTHONUNBUFFERED: 1
     ports:
       - "8000:8000"
     volumes:
+      # Sincroniza tu código local con el contenedor para ver cambios en tiempo real
       - ./backend/app:/app/app
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     restart: unless-stopped
@@ -45,10 +47,14 @@ services:
     environment:
       API_URL: ${API_URL}
       NUXT_PUBLIC_API_URL: ${NUXT_PUBLIC_API_URL}
-      NODE_ENV: production
+      NODE_ENV: development # Cambiado a desarrollo
     ports:
       - "3000:3000"
-    command: npm run preview
+    volumes:
+      # Opcional, pero recomendado: sincroniza el código del frontend para recarga en caliente
+      - ./frontend:/app
+      - /app/node_modules # Evita sobreescribir los módulos instalados en el contenedor
+    command: npm run dev # Cambiado de preview a dev para desarrollo local
 
 volumes:
   mongodb_data:

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const route = useRoute()
+const { copy } = usePortfolioCopy()
 </script>
 
 <template>
@@ -10,14 +11,18 @@ const route = useRoute()
           <span class="site-label">// javier.sepúlveda</span>
         </NuxtLink>
 
-        <nav class="site-nav">
-          <NuxtLink to="/" class="nav-link" :class="{ active: route.path === '/' }">
-            $ inicio
-          </NuxtLink>
-          <NuxtLink to="/contact" class="nav-link" :class="{ active: route.path === '/contact' }">
-            $ contacto
-          </NuxtLink>
-        </nav>
+        <div class="header-actions">
+          <nav class="site-nav">
+            <NuxtLink to="/" class="nav-link" :class="{ active: route.path === '/' }">
+              $ {{ copy.ui.homeIntroEyebrow.toLowerCase() }}
+            </NuxtLink>
+            <NuxtLink to="/contact" class="nav-link" :class="{ active: route.path === '/contact' }">
+              $ {{ copy.ui.contactEyebrow.toLowerCase() }}
+            </NuxtLink>
+          </nav>
+
+          <LanguageSwitcher />
+        </div>
       </div>
     </header>
 
@@ -27,7 +32,7 @@ const route = useRoute()
 
     <footer class="site-footer">
       <div class="footer-content">
-        <p>// {{ new Date().getFullYear() }} — javier sepúlveda — hecho con nuxt 3 + fastapi</p>
+        <p>{{ copy.ui.footer(new Date().getFullYear()) }}</p>
       </div>
     </footer>
   </div>
@@ -59,6 +64,12 @@ const route = useRoute()
   justify-content: space-between;
   align-items: center;
   gap: 32px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .site-logo {
@@ -158,6 +169,13 @@ const route = useRoute()
 
   .site-nav {
     gap: 20px;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
   }
 
   .site-main {

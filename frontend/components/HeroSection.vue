@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { PersonalInfo } from '~/stores/cvStore'
 import profileImg from '~/assets/profile.png'
+
+const { copy, locale, translateProfile } = usePortfolioCopy()
 
 const props = defineProps<{
   profile: PersonalInfo | null
@@ -9,22 +11,57 @@ const props = defineProps<{
 
 const typewriterText = ref('')
 const showContent = ref(false)
+const localizedProfile = computed(() => translateProfile(props.profile))
 
-onMounted(() => {
-  const fullText = props.profile?.name
-    ? `Hola!, soy ${props.profile.name}`
-    : 'Hola!, bienvenido'
+let typewriterTimer: ReturnType<typeof setInterval> | null = null
+let revealTimer: ReturnType<typeof setTimeout> | null = null
 
+const clearTimers = () => {
+  if (typewriterTimer) {
+    clearInterval(typewriterTimer)
+    typewriterTimer = null
+  }
+
+  if (revealTimer) {
+    clearTimeout(revealTimer)
+    revealTimer = null
+  }
+}
+
+const startTypewriter = () => {
+  clearTimers()
+  showContent.value = false
+  typewriterText.value = ''
+
+  const fullText = copy.value.ui.heroGreeting(props.profile?.name)
   let currentIndex = 0
-  const interval = setInterval(() => {
+
+  typewriterTimer = setInterval(() => {
     if (currentIndex <= fullText.length) {
       typewriterText.value = fullText.substring(0, currentIndex)
       currentIndex++
-    } else {
-      clearInterval(interval)
-      setTimeout(() => { showContent.value = true }, 300)
+      return
     }
+
+    clearTimers()
+    revealTimer = setTimeout(() => {
+      showContent.value = true
+    }, 300)
   }, 70)
+}
+
+onMounted(() => {
+  startTypewriter()
+})
+
+watch([() => props.profile?.name, () => locale.value], () => {
+  if (import.meta.client) {
+    startTypewriter()
+  }
+})
+
+onBeforeUnmount(() => {
+  clearTimers()
 })
 </script>
 
@@ -39,7 +76,7 @@ onMounted(() => {
             <span class="btn-minimize"></span>
             <span class="btn-maximize"></span>
           </div>
-          <span class="terminal-title">photo.png</span>
+          <span class="terminal-title">{{ copy.ui.heroPhotoTitle }}</span>
         </div>
         <div class="photo-content">
           <img :src="profileImg" alt="Javier Sepúlveda" class="profile-photo" />
@@ -54,7 +91,7 @@ onMounted(() => {
             <span class="btn-minimize"></span>
             <span class="btn-maximize"></span>
           </div>
-          <span class="terminal-title">javier@portfolio:~</span>
+          <span class="terminal-title">{{ copy.ui.heroTerminalTitle }}</span>
         </div>
         <div class="terminal-content">
           <div class="terminal-line">
@@ -63,13 +100,13 @@ onMounted(() => {
           </div>
 
           <Transition name="fade">
-            <div v-if="showContent && profile" class="about-output">
+            <div v-if="showContent && localizedProfile" class="about-output">
               <div class="terminal-line">
                 <span class="prompt">~/portfolio $</span>
-                <span class="command">cat profile.txt</span>
+                <span class="command">{{ copy.ui.heroCommand }}</span>
               </div>
-              <h2 class="about-title">{{ profile.title }}</h2>
-              <p class="about-text">{{ profile.summary }}</p>
+              <h2 class="about-title">{{ localizedProfile.title }}</h2>
+              <p class="about-text">{{ localizedProfile.summary }}</p>
             </div>
           </Transition>
         </div>
@@ -78,13 +115,10 @@ onMounted(() => {
 
     <div v-if="profile" class="hero-links">
       <a :href="String(profile.github_url)" target="_blank" rel="noopener noreferrer" class="link-btn">
-        $ github
+        {{ copy.ui.heroGithub }}
       </a>
       <a :href="String(profile.linkedin_url)" target="_blank" rel="noopener noreferrer" class="link-btn">
-        $ linkedin
-      </a>
-      <a :href="`mailto:${profile.email}`" class="link-btn">
-        $ email
+        {{ copy.ui.heroLinkedin }}
       </a>
     </div>
   </section>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { ProjectItem } from '~/stores/cvStore'
 
+const { copy } = usePortfolioCopy()
+
 defineProps<{
   projects: ProjectItem[]
 }>()
@@ -9,8 +11,8 @@ defineProps<{
 <template>
   <section class="projects-section">
     <div class="section-header">
-      <h2>$ projects --featured</h2>
-      <p class="section-subtitle">// Proyectos en los que he trabajado</p>
+      <h2>{{ copy.ui.projectsTitle }}</h2>
+      <p class="section-subtitle">{{ copy.ui.projectsSubtitle }}</p>
     </div>
     <div class="projects-grid">
       <ProjectCard v-for="project in projects" :key="project.id" :project="project" />

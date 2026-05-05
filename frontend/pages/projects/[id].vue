@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { useCvStore } from '~/stores/cvStore'
 
+const { copy, formatDate, translateProject } = usePortfolioCopy()
+
 const route = useRoute()
 const cvStore = useCvStore()
 
 const projectId = route.params.id as string
 const project = computed(() => cvStore.projects.find((p) => p.id === projectId))
+const localizedProject = computed(() => (project.value ? translateProject(project.value) : null))
 
 if (!project.value && cvStore.projects.length === 0) {
   await cvStore.fetchProjects()
@@ -14,93 +17,80 @@ if (!project.value && cvStore.projects.length === 0) {
 if (!project.value) {
   throw createError({ statusCode: 404, statusMessage: 'Project not found' })
 }
-
-/** Format project date — empty string means "En desarrollo". */
-function formatDate(dateStr: string): string {
-  if (!dateStr) return 'TBA'
-
-  const parsedDate = new Date(dateStr)
-  if (Number.isNaN(parsedDate.getTime())) return 'TBA'
-
-  return parsedDate.toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: 'long',
-  })
-}
 </script>
 
 <template>
-  <div v-if="project" class="project-detail">
+  <div v-if="localizedProject" class="project-detail">
     <div class="project-nav">
-      <NuxtLink to="/" class="back-link">← $ cd ..</NuxtLink>
+      <NuxtLink to="/" class="back-link">{{ copy.ui.projectDetail.backLink }}</NuxtLink>
     </div>
 
-    <div class="project-hero-banner" v-if="project.images.length">
-      <img :src="project.images[0]" :alt="project.title" />
+    <div class="project-hero-banner" v-if="localizedProject.images.length">
+      <img :src="localizedProject.images[0]" :alt="localizedProject.title" />
     </div>
 
     <header class="project-header">
-      <span class="project-date">{{ formatDate(project.created_at) }}</span>
-      <h1>{{ project.title }}</h1>
-      <p class="project-short">{{ project.short_description }}</p>
+      <span class="project-date">{{ formatDate(localizedProject.created_at) }}</span>
+      <h1>{{ localizedProject.title }}</h1>
+      <p class="project-short">{{ localizedProject.short_description }}</p>
     </header>
 
     <div class="project-body">
       <div class="project-description">
-        <h2>$ cat description.txt</h2>
-        <p>{{ project.description }}</p>
+        <h2>{{ copy.ui.projectDetail.descriptionTitle }}</h2>
+        <p>{{ localizedProject.description }}</p>
       </div>
 
       <aside class="project-sidebar">
         <div class="sidebar-block">
-          <h3>// Tecnologías</h3>
+          <h3>{{ copy.ui.projectDetail.technologiesTitle }}</h3>
           <div class="tech-list">
-            <span v-for="tech in project.technologies" :key="tech" class="tech-tag">
+            <span v-for="tech in localizedProject.technologies" :key="tech" class="tech-tag">
               {{ tech }}
             </span>
           </div>
         </div>
 
-        <div v-if="project.links.length" class="sidebar-block">
-          <h3>// Enlaces</h3>
+        <div v-if="localizedProject.links.length" class="sidebar-block">
+          <h3>{{ copy.ui.projectDetail.linksTitle }}</h3>
           <div class="links-list">
             <a
-              v-for="link in project.links"
+              v-for="link in localizedProject.links"
               :key="link.type"
               :href="String(link.url)"
               target="_blank"
               rel="noopener noreferrer"
               class="link-button"
             >
-              $ open {{ link.label.toLowerCase() }}
+              {{ copy.ui.projectDetail.openLink }} {{ link.label.toLowerCase() }}
             </a>
           </div>
         </div>
 
         <div class="sidebar-block">
-          <h3>// Fecha</h3>
-          <p class="date-value">{{ formatDate(project.created_at) }}</p>
+          <h3>{{ copy.ui.projectDetail.dateTitle }}</h3>
+          <p class="date-value">{{ formatDate(localizedProject.created_at) }}</p>
         </div>
       </aside>
     </div>
 
-    <div v-if="project.images.length > 1" class="gallery">
-      <h2>$ ls ./gallery</h2>
+    <div v-if="localizedProject.images.length > 1" class="gallery">
+      <h2>{{ copy.ui.projectDetail.galleryTitle }}</h2>
       <div class="gallery-grid">
         <img
-          v-for="(image, index) in project.images"
+          v-for="(image, index) in localizedProject.images"
           :key="index"
           :src="image"
-          :alt="`${project.title} - Imagen ${index + 1}`"
+          :alt="`${localizedProject.title} - ${index + 1}`"
           class="gallery-image"
         />
       </div>
     </div>
 
     <div class="contact-cta">
-      <h2>¿Interesado en colaborar?</h2>
-      <p>Si te gustan los proyectos que has visto, me encantaría hablar contigo.</p>
-      <NuxtLink to="/contact" class="btn-contact">$ contacto --nuevo</NuxtLink>
+      <h2>{{ copy.ui.projectDetail.collaborateTitle }}</h2>
+      <p>{{ copy.ui.projectDetail.collaborateBody }}</p>
+      <NuxtLink to="/contact" class="btn-contact">{{ copy.ui.projectDetail.collaborateButton }}</NuxtLink>
     </div>
   </div>
 </template>

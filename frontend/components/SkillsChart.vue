@@ -13,22 +13,35 @@ import type { SkillItem } from '~/stores/cvStore'
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip)
 
+const { copy, isSoftSkillsCategory, translateSkillCategory, translateSoftSkills } = usePortfolioCopy()
+
 const props = defineProps<{
   skills: SkillItem[]
 }>()
 
+const softSkillsSource = computed(() => props.skills.find((skill) => isSoftSkillsCategory(skill.category)) ?? null)
+
 const technicalSkills = computed(() =>
-  props.skills.filter((s) => s.category !== 'Habilidades Blandas')
+  props.skills
+    .filter((skill) => !isSoftSkillsCategory(skill.category))
+    .map((skill) => ({ ...skill, category: translateSkillCategory(skill.category) }))
 )
-const softSkills = computed(() =>
-  props.skills.find((s) => s.category === 'Habilidades Blandas')
-)
+
+const softSkills = computed(() => {
+  if (!softSkillsSource.value) return null
+
+  return {
+    ...softSkillsSource.value,
+    category: copy.value.content.skills.softSkillsTitle,
+    items: translateSoftSkills(softSkillsSource.value.items),
+  }
+})
 
 const chartData = computed(() => ({
   labels: technicalSkills.value.map((s) => s.category),
   datasets: [
     {
-      label: 'Proficiency',
+      label: copy.value.content.skills.chartLabel,
       data: technicalSkills.value.map((s) => s.proficiency),
       backgroundColor: 'rgba(220, 38, 38, 0.2)',
       borderColor: '#dc2626',
@@ -84,8 +97,8 @@ watch(() => props.skills, () => { chartKey.value++ })
 <template>
   <section class="skills-section">
     <div class="skills-header">
-      <h2>$ skills --list</h2>
-      <p class="section-subtitle">// Tecnologías y herramientas</p>
+      <h2>{{ copy.ui.skillsTitle }}</h2>
+      <p class="section-subtitle">{{ copy.ui.skillsSubtitle }}</p>
     </div>
 
     <!-- Top: Soft skills + Radar chart side by side -->
@@ -104,7 +117,7 @@ watch(() => props.skills, () => { chartKey.value++ })
 
     <!-- Bottom: Tag grid (technical only, no soft skills) -->
     <div class="tags-section">
-      <h3 class="tags-title">// Tecnologías</h3>
+      <h3 class="tags-title">{{ copy.ui.skillsTechnologiesTitle }}</h3>
       <div class="tags-container">
         <div v-for="skill in technicalSkills" :key="skill.category" class="tag-group">
           <span class="tag-category">{{ skill.category }}</span>

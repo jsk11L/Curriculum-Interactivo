@@ -1,48 +1,37 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { ProjectItem } from "~/stores/cvStore"
 
-defineProps<{
+const { formatDate, translateProject } = usePortfolioCopy()
+
+const props = defineProps<{
   project: ProjectItem
 }>()
 
-/**
- * Format a project date string for display.
- * Empty string → "En desarrollo", otherwise locale-formatted date.
- */
-function formatDate(dateStr: string): string {
-  if (!dateStr) return "TBA"
-
-  const parsedDate = new Date(dateStr)
-  if (Number.isNaN(parsedDate.getTime())) return "TBA"
-
-  return parsedDate.toLocaleDateString("es-ES", {
-    year: "numeric",
-    month: "long",
-  })
-}
+const localizedProject = computed(() => translateProject(props.project))
 </script>
 
 <template>
   <NuxtLink :to="`/projects/${project.id}`" class="project-card">
     <div class="project-image">
-      <img v-if="project.images.length" :src="project.images[0]" :alt="project.title" />
+      <img v-if="localizedProject.images.length" :src="localizedProject.images[0]" :alt="localizedProject.title" />
       <div v-else class="placeholder">
         <span class="placeholder-icon">{ }</span>
-        <span>{{ project.title }}</span>
+        <span>{{ localizedProject.title }}</span>
       </div>
     </div>
     <div class="project-content">
       <div class="project-meta">
-        <span class="project-date">{{ formatDate(project.created_at) }}</span>
+        <span class="project-date">{{ formatDate(localizedProject.created_at) }}</span>
       </div>
-      <h3 class="project-title">{{ project.title }}</h3>
-      <p class="project-description">{{ project.short_description }}</p>
+      <h3 class="project-title">{{ localizedProject.title }}</h3>
+      <p class="project-description">{{ localizedProject.short_description }}</p>
       <div class="project-tech">
-        <span v-for="tech in project.technologies.slice(0, 4)" :key="tech" class="tech-badge">
+        <span v-for="tech in localizedProject.technologies.slice(0, 4)" :key="tech" class="tech-badge">
           {{ tech }}
         </span>
-        <span v-if="project.technologies.length > 4" class="tech-more">
-          +{{ project.technologies.length - 4 }}
+        <span v-if="localizedProject.technologies.length > 4" class="tech-more">
+          +{{ localizedProject.technologies.length - 4 }}
         </span>
       </div>
     </div>

@@ -1,8 +1,6 @@
 """Seed data and auto-population for MongoDB collections."""
 
 import logging
-from datetime import datetime, timezone
-from urllib.parse import quote
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
 

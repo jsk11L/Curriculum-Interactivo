@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 
+const { copy } = usePortfolioCopy()
+
 const cvStore = useCvStore()
 const { profile, experiences, skills, projects, loading, error } = storeToRefs(cvStore)
 
@@ -17,8 +19,8 @@ await useAsyncData('cv-data', () => cvStore.loadAll(), {
   <Transition name="loading-fade">
     <div v-if="loading" class="loading-screen">
       <div class="loading-content">
-        <span class="loading-title">javier@portfolio:~</span>
-        <p class="loading-text">$ cargando curriculum...</p>
+        <span class="loading-title">{{ copy.ui.loadingTitle }}</span>
+        <p class="loading-text">{{ copy.ui.loadingText }}</p>
         <div class="loading-bar-track">
           <div class="loading-bar-fill"></div>
         </div>
@@ -37,12 +39,10 @@ await useAsyncData('cv-data', () => cvStore.loadAll(), {
     <template v-else>
       <section class="intro-band">
         <div>
-          <p class="eyebrow">Sobre mí</p>
-          <h2>Software útil, investigación y creatividad</h2>
+          <p class="eyebrow">{{ copy.ui.homeIntroEyebrow }}</p>
+          <h2>{{ copy.ui.homeIntroTitle }}</h2>
         </div>
-        <p>
-          Aquí reúno mi trayectoria, proyectos y habilidades técnicas en un solo lugar.
-        </p>
+        <p>{{ copy.ui.homeIntroBody }}</p>
       </section>
 
       <!-- Projects FIRST -->
@@ -56,28 +56,25 @@ await useAsyncData('cv-data', () => cvStore.loadAll(), {
 
       <section v-if="profile" class="contact-preview">
         <div class="contact-copy">
-          <p class="eyebrow">Contacto</p>
-          <h2>¿Quieres hablar sobre un proyecto?</h2>
-          <p>
-            Si tienes una idea, proyecto o propuesta, no dudes en contactarme.
-            Estoy abierto a colaboraciones y nuevas oportunidades.
-          </p>
+          <p class="eyebrow">{{ copy.ui.contactEyebrow }}</p>
+          <h2>{{ copy.ui.contactTitle }}</h2>
+          <p>{{ copy.ui.contactBody }}</p>
         </div>
 
         <div class="contact-actions">
           <div class="contact-item">
-            <span class="contact-label">email</span>
+            <span class="contact-label">{{ copy.ui.contactEmailLabel }}</span>
             <a :href="`mailto:${profile.email}`">{{ profile.email }}</a>
           </div>
           <div class="contact-item">
-            <span class="contact-label">github</span>
+            <span class="contact-label">{{ copy.ui.contactGithubLabel }}</span>
             <a :href="String(profile.github_url)" target="_blank" rel="noopener">{{ String(profile.github_url).replace('https://', '') }}</a>
           </div>
           <div class="contact-item">
-            <span class="contact-label">linkedin</span>
+            <span class="contact-label">{{ copy.ui.contactLinkedinLabel }}</span>
             <a :href="String(profile.linkedin_url)" target="_blank" rel="noopener">{{ String(profile.linkedin_url).replace('https://www.', '') }}</a>
           </div>
-          <NuxtLink to="/contact" class="contact-button">$ contacto --nuevo</NuxtLink>
+          <NuxtLink to="/contact" class="contact-button">{{ copy.ui.contactButton }}</NuxtLink>
         </div>
       </section>
     </template>

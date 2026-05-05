@@ -1,18 +1,23 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { ExperienceItem } from '~/stores/cvStore'
 
-defineProps<{
+const { copy, formatRange, translateExperience } = usePortfolioCopy()
+
+const props = defineProps<{
   experiences: ExperienceItem[]
 }>()
+
+const localizedExperiences = computed(() => props.experiences.map((experience) => translateExperience(experience)))
 </script>
 
 <template>
   <section class="experience-section">
-    <h2>$ experience --timeline</h2>
-    <p class="section-subtitle">// Trayectoria profesional y académica</p>
+    <h2>{{ copy.ui.experienceTitle }}</h2>
+    <p class="section-subtitle">{{ copy.ui.experienceSubtitle }}</p>
 
     <div class="timeline">
-      <div v-for="exp in experiences" :key="exp.id" class="timeline-item">
+      <div v-for="exp in localizedExperiences" :key="exp.id" class="timeline-item">
         <div class="timeline-marker">
           <span class="marker-dot"></span>
           <span class="marker-line"></span>
@@ -20,7 +25,7 @@ defineProps<{
 
         <article class="experience-card">
           <div class="card-header">
-            <span class="dates">{{ exp.start_date }} → {{ exp.end_date }}</span>
+            <span class="dates">{{ formatRange(exp.start_date, exp.end_date) }}</span>
             <h3 class="position">{{ exp.position }}</h3>
             <p class="company">@ {{ exp.company }}</p>
           </div>
