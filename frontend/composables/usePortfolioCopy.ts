@@ -167,7 +167,7 @@ const localeCopies: Record<Locale, LocaleCopy> = {
       profile: {
         title: 'Estudiante de 5to año de Ingeniería Civil Informática',
         summary:
-          'Estudiante de 5to año de Ingeniería Civil Informática apasionado por construir software y herramientas que voy viendo necesario en mi vida y que pueden ser útil a más gente. Tengo experiencia en investigación y soy co-autor de una publicación de optimización de cronogramas hospitalarios. Me apasionan la música y los videojuegos.',
+          'Soy Javier, tengo 22 años y soy chileno. Estudiante de 5to año de Ingeniería Civil Informática apasionado por construir software y herramientas que voy viendo necesario en mi vida y que pueden ser útil a más gente. Tengo experiencia en investigación y soy co-autor de una publicación de optimización de cronogramas hospitalarios. Me apasionan la música y los videojuegos.',
       },
       experiences: {
         'exp-programming': {
@@ -321,7 +321,7 @@ const localeCopies: Record<Locale, LocaleCopy> = {
       profile: {
         title: '5th-year Computer Engineering student',
         summary:
-          '5th-year Computer Engineering student passionate about building software and tools that I find useful in my own life and that can help more people. I have research experience and I am a co-author of a paper on hospital schedule optimization. I am passionate about music and video games.',
+          'I\'m Javier, 22 years old and Chilean. A 5th-year Computer Engineering student passionate about building software and tools that I find useful in my own life and that can help more people. I have research experience and I am a co-author of a paper on hospital schedule optimization. I am passionate about music and video games.',
       },
       experiences: {
         'exp-programming': {
@@ -476,7 +476,7 @@ const localeCopies: Record<Locale, LocaleCopy> = {
       profile: {
         title: 'Student im 5. Jahr der Computertechnik',
         summary:
-          'Student im 5. Jahr der Computertechnik mit Leidenschaft für Software und Werkzeuge, die ich in meinem eigenen Alltag nützlich finde und die auch anderen helfen können. Ich habe Forschungserfahrung und bin Mitautor einer Veröffentlichung zur Optimierung von Krankenhausplänen. Musik und Videospiele begeistern mich.',
+          'Ich bin Javier, 22 Jahre alt und Chilene. Student im 5. Jahr der Computertechnik mit Leidenschaft für Software und Werkzeuge, die ich in meinem eigenen Alltag nützlich finde und die auch anderen helfen können. Ich habe Forschungserfahrung und bin Mitautor einer Veröffentlichung zur Optimierung von Krankenhausplänen. Musik und Videospiele begeistern mich.',
       },
       experiences: {
         'exp-programming': {
@@ -631,7 +631,7 @@ const localeCopies: Record<Locale, LocaleCopy> = {
       profile: {
         title: 'Студент 5-го курса компьютерной инженерии',
         summary:
-          'Студент 5-го курса компьютерной инженерии, увлеченный созданием полезного программного обеспечения и инструментов, которые я сам использую в жизни и которые могут помочь другим. У меня есть опыт в исследованиях, и я являюсь соавтором публикации по оптимизации расписаний в больницах. Меня вдохновляют музыка и видеоигры.',
+          'Я Хавьер, мне 22 года и я из Чили. Студент 5-го курса компьютерной инженерии, увлеченный созданием полезного программного обеспечения и инструментов, которые я сам использую в жизни и которые могут помочь другим. У меня есть опыт в исследованиях, и я являюсь соавтором публикации по оптимизации расписаний в больницах. Меня вдохновляют музыка и видеоигры.',
       },
       experiences: {
         'exp-programming': {

@@ -31,11 +31,12 @@ PROFILE_DATA = {
     "name": "Javier Sepúlveda",
     "title": "Estudiante de 5to año de Ingeniería Civil Informática",
     "summary": (
-        "Estudiante de 5to año de Ingeniería Civil Informática apasionado "
-        "por construir software y herramientas que voy viendo necesario en "
-        "mi vida y que pueden ser útil a más gente. Tengo experiencia en "
-        "investigación y soy co-autor de una publicación de optimización de "
-        "cronogramas hospitalarios. Me apasionan la música y los videojuegos."
+        "Soy Javier, tengo 22 años y soy chileno. Estudiante de 5to año de "
+        "Ingeniería Civil Informática apasionado por construir software y "
+        "herramientas que voy viendo necesario en mi vida y que pueden ser útil "
+        "a más gente. Tengo experiencia en investigación y soy co-autor de una "
+        "publicación de optimización de cronogramas hospitalarios. Me apasionan "
+        "la música y los videojuegos."
     ),
     "github_url": "https://github.com/jsk11L",
     "linkedin_url": "https://www.linkedin.com/in/jasepulvedaca/",
