@@ -1,10 +1,31 @@
 """Seed data and auto-population for MongoDB collections."""
 
 import logging
+import os
+from enum import Enum
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 logger = logging.getLogger(__name__)
+
+
+class SeedStrategy(str, Enum):
+    """Strategies for handling existing data during seeding."""
+    CLEAN_AND_POPULATE = "clean_and_populate"  # Drop and re-create
+    REPLACE = "replace"  # Replace existing documents, keep others
+    SKIP_IF_EXISTS = "skip_if_exists"  # Only seed if collections are empty
+
+
+def get_seed_strategy() -> SeedStrategy:
+    """Get the seeding strategy from environment variable."""
+    strategy = os.environ.get("SEED_STRATEGY", "clean_and_populate").lower()
+    try:
+        return SeedStrategy(strategy)
+    except ValueError:
+        logger.warning(
+            f"Invalid SEED_STRATEGY '{strategy}', using 'clean_and_populate'"
+        )
+        return SeedStrategy.CLEAN_AND_POPULATE
 
 PROFILE_DATA = {
     "name": "Javier Sepúlveda",
@@ -263,22 +284,84 @@ PROJECTS_DATA = [
 
 
 async def seed_database(db: AsyncIOMotorDatabase) -> bool:
-    """Drop and re-populate MongoDB collections from seed data.
+    """Populate MongoDB collections from seed data.
 
-    Always re-seeds to ensure the database matches the current seed file.
+    Strategy is controlled by SEED_STRATEGY environment variable:
+    - clean_and_populate: Drop and re-create collections (default)
+    - replace: Replace documents by ID, keep non-matching documents
+    - skip_if_exists: Only seed if collections are empty
     """
-    for coll in ("profile", "experiences", "skills", "projects"):
-        await db[coll].drop()
+    strategy = get_seed_strategy()
+    logger.info(f"🌱 Seeding database with strategy: {strategy.value}")
 
+    try:
+        if strategy == SeedStrategy.CLEAN_AND_POPULATE:
+            await _seed_clean_and_populate(db)
+        elif strategy == SeedStrategy.REPLACE:
+            await _seed_replace(db)
+        elif strategy == SeedStrategy.SKIP_IF_EXISTS:
+            await _seed_skip_if_exists(db)
+
+        logger.info(
+            "✓ Seeding complete: profile, %d experiences, %d skills, %d projects",
+            len(EXPERIENCES_DATA),
+            len(SKILLS_DATA),
+            len(PROJECTS_DATA),
+        )
+        return True
+    except Exception as e:
+        logger.error(f"✗ Failed to seed database: {e}", exc_info=True)
+        raise
+
+
+async def _seed_clean_and_populate(db: AsyncIOMotorDatabase) -> None:
+    """Drop all collections and repopulate with fresh data."""
+    logger.info("Dropping existing collections...")
+    for coll in ("profile", "experiences", "skills", "projects"):
+        result = await db[coll].delete_many({})
+        logger.debug(f"  Deleted {result.deleted_count} documents from {coll}")
+
+    logger.info("Populating collections with seed data...")
     await db.profile.insert_one(PROFILE_DATA.copy())
     await db.experiences.insert_many([e.copy() for e in EXPERIENCES_DATA])
     await db.skills.insert_many([s.copy() for s in SKILLS_DATA])
     await db.projects.insert_many([p.copy() for p in PROJECTS_DATA])
 
-    logger.info(
-        "✓ Seeded database: profile, %d experiences, %d skills, %d projects",
-        len(EXPERIENCES_DATA),
-        len(SKILLS_DATA),
-        len(PROJECTS_DATA),
-    )
-    return True
+
+async def _seed_replace(db: AsyncIOMotorDatabase) -> None:
+    """Replace existing seed documents by ID, keeping other documents."""
+    logger.info("Replacing documents by ID...")
+
+    # Replace profile
+    await db.profile.replace_one({}, PROFILE_DATA.copy(), upsert=True)
+
+    # Replace experiences by ID
+    for exp in EXPERIENCES_DATA:
+        await db.experiences.replace_one({"id": exp["id"]}, exp.copy(), upsert=True)
+
+    # Replace skills by category
+    for skill in SKILLS_DATA:
+        await db.skills.replace_one(
+            {"category": skill["category"]}, skill.copy(), upsert=True
+        )
+
+    # Replace projects by ID
+    for project in PROJECTS_DATA:
+        await db.projects.replace_one({"id": project["id"]}, project.copy(), upsert=True)
+
+
+async def _seed_skip_if_exists(db: AsyncIOMotorDatabase) -> None:
+    """Only seed if collections are empty."""
+    logger.info("Checking if collections exist and have data...")
+    
+    # Check if profile exists
+    profile_count = await db.profile.count_documents({})
+    if profile_count > 0:
+        logger.info(f"Skipping seed: profile already has {profile_count} documents")
+        return
+
+    logger.info("Collections are empty, seeding...")
+    await db.profile.insert_one(PROFILE_DATA.copy())
+    await db.experiences.insert_many([e.copy() for e in EXPERIENCES_DATA])
+    await db.skills.insert_many([s.copy() for s in SKILLS_DATA])
+    await db.projects.insert_many([p.copy() for p in PROJECTS_DATA])

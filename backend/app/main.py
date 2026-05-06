@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .api.endpoints import router as cv_router
 from .core.config import get_settings
 from .core.database import close_mongo_connection, connect_to_mongo, get_database, mongo_database
-from .core.seed import seed_database
+from .core.seed import seed_database, get_seed_strategy
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +30,10 @@ async def lifespan(app: FastAPI):
     masked = raw_env[:20] + "..." if len(raw_env) > 20 else raw_env
     logger.info(f"🔧 ENV MONGO_URI = {masked}")
     logger.info(f"🔧 Settings mongo_uri = {settings.mongo_uri[:20]}...")
+    
+    # Log seeding strategy
+    strategy = get_seed_strategy()
+    logger.info(f"🔧 SEED_STRATEGY = {strategy.value}")
 
     logger.info("🚀 Starting up Curriculum API...")
     try:

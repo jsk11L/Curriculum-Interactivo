@@ -28,6 +28,9 @@ services:
       # Si falla el .env, usará esta por defecto apuntando al contenedor local
       MONGO_URI: ${MONGO_URI:-mongodb://mongodb:27017/cv_db}
       PYTHONUNBUFFERED: 1
+      # Estrategia de seeding: clean_and_populate, replace, skip_if_exists
+      # Use clean_and_populate para evitar duplicados en despliegues
+      SEED_STRATEGY: ${SEED_STRATEGY:-clean_and_populate}
     ports:
       - "8000:8000"
     volumes:
